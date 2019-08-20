@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 
 \usepackage[english,francais]{babel}
 \usepackage[utf8]{inputenc}
@@ -17,13 +17,52 @@
 \usepackage{listings}
 \usepackage{placeins}
 \usepackage{setspace}
+\usepackage{hyperref}
+\usepackage[toc,section=section]{glossaries}
 \onehalfspacing
+\makeglossaries
+
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{ \markboth{#1}{} }
+\renewcommand{\sectionmark}[1]{ \markright{#1} }
+
+
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\fancyhead[L]{ \nouppercase{\leftmark} }
+\fancyhead[L]{\nouppercase{\rightmark} }
+
+\fancypagestyle{plain}{ %
+  \fancyhf{} % remove everything
+  \renewcommand{\headrulewidth}{0pt} % remove lines as well
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+\newglossaryentry{structure}
+{
+  name=produit structuré,
+  description={Produit financier émis par une banque (pour la grande partie des cas) pour répondre à un besoin spécifique d'un client},
+  plural={produits structurés},
+  sort=produit structuré
+}
+\newglossaryentry{sous-jacent}
+{
+name=sous-jacent,
+description={Actif servant à une référence à un produit dérivé (option, future) ou un produit structuré. Il peut s'agir d'un produit financier (action, indice, obligations) ou physique (matière première)}
+}
+
+\newglossaryentry{payoff}{
+name=payoff,
+description={Résultat que reçoit le détenteur du produit financier}
+}
 
 \title{Rapport de Stage}
 \author{MONSINJON Sam}
 \date{\today}
 
-\pagestyle{headings}
 
 \begin{document}
 \lstset{ numbers=left, tabsize=3, frame=single, numberstyle=\ttfamily, basicstyle=\footnotesize} 
@@ -32,7 +71,7 @@
 \begin{center}
 \makebox[\textwidth][l]{
 \raisebox{-8pt}[0pt][0pt]{
-\includegraphics[scale=0.18]{logo_entreprise.pdf}
+\includegraphics[scale=0.5]{silex.png}
 }
 }
 \makebox[\textwidth][r]{
@@ -61,41 +100,65 @@ MONSINJON Sam\\
 17 Juin 2019 -- 23 août 2019\\
 \vspace{4cm}
 \begin{tabular}{p{10cm}p{10cm}}
-{\bf Nom Entreprise}                                            &{\bf Responsable de stage}\\
-{\footnotesize Adresse Entreprise}       & ~~~Nom Et Prénom Tuteur Entreprise\\
-{\footnotesize BP XX}                                        & {\bf Tuteur de l'école}\\
-{\footnotesize 38000 Grenoble Cedex}                          & ~~~Nom et PrénomTuteur Ecole\\
+{\bf SILEX}                                             &{\bf Responsable de stage}\\
+{ 9 rue Beaujon}                           & ~~~Frank Génot\\
+{ 75008 Paris}                             & {\bf Tuteur de l'école}\\
+                                                        & ~~~Pierre Etoré\\
 \end{tabular}
 \end{center}
-
 \newpage
 \tableofcontents
 \newpage
 \section{Introduction}
-Du 17 juin 2019 au 23 août 2019, j'ai eu la chance d'effectuer un stage assistant ingénieur au sein de SILEX, une société de gestion d'actifs financiers. Lors de ce stage, je me suis retrouvé au sein du pôle technologique, et j'ai eu pour principale mission de travailler sur un priceur de produits structurés.
+Du 17 juin au 23 août 2019, j'ai eu la chance d'effectuer un stage assistant ingénieur au sein de SILEX, une société de gestion d'actifs financiers. Lors de ce stage, je me suis retrouvé au sein du pôle technologique, et j'ai eu pour principale mission de travailler sur un priceur de \glspl{structure}. \vspace{0.5em}
 
-Plan du rapport
+Ce projet a été commencé en début d'année et est prévu pour septembre. En rentrant les paramètres d'un produit structuré particulier, le priceur calcule un prix théorique du produit. Cependant, comme un produit structuré est souvent associé à un ou plusieurs \glspl{sous-jacent}, le priceur doit connaître tous les paramètres liés à ceux-ci. Ce projet s'appuie alors sur une base de données mise à jour constamment. \vspace{0.5em}
+
+Mon rôle au sein de ce projet fut en grande partie d'implémenter des \glspl{payoff} de produits structurés. Ils sont explicités dans les "termsheets" des produits, qui fait office de contrat. Cependant, vu l'ampleur du projet, j'ai aussi apporté mon aide sur plusieurs points du priceur, dont la gestion de la base de données. \vspace{0.5em}
 
 
 
 
 \newpage
-
 \section{SILEX}
 \subsection{Présentation globale}
-SILEX est une société de gestion d'actifs créée en 2016. L'entreprise est divisée en trois principales entités : 
+SILEX est une société de gestion d'actifs créée en 2016 par Fabrice Rey et Xavier Laborde. L'entreprise est divisée en trois principales entités : 
 \begin{itemize}
     \item SILEX AM : Ce pôle s'occupe de la gestion d'actifs des clients de la société, qui sont principalement des gérants de fortune.
     \item SILEX FINANCE : Ce pôle est constitué de vendeurs. à développer% Ceux-ci vendent en particulier des produits structurés.
     \item SILEX TECHNOLOGIES : Ce pôle, dans lequel je travaillais pendant mon stage, est un pôle de recherche \& développement. Celui-ci s'occupe principalement d'implémenter des outils qu'utilisent les vendeurs et les gerants de portefeuilles, en particulier l'outil SPARK, utilisé par les gérants de portefeuilles.
-\end{itemize}
+\end{itemize} 
+\vspace{0.5em}
+
+L'entreprise est basée à Genève et possède des bureaux à Paris, lieu de mon stage. Les entités SILEX AM et FINANCE sont divisées entre Paris et Genève, alors que l'équipe SILEX TECH se trouve à Paris. L'entreprise est composée d'une vingtaine de personnes à Paris comme à Genève.
+
+\subsection{L'équipe Tech}
+L'équipe de SILEX Technologies est composée de 6 personnes, dirigée par Frank Génot, le CTO de SILEX et également ancien élève de l'Ensimag. 
+
  \subsection{L'outil SPARK}
  La technologie SPARK est un outil développé par les ingénieurs de SILEX technologies. SPARK est utilisé pour aider les gérants de portefeuilles à construire, optimiser et suivre un portefeuille. Il y a pour le moment, deux versions de SPARK : \textit{STOCKS ALLOCATOR} qui se concentre exclusivement sur le marchés des actions, et \textit{ASSET ALLOCATOR} qui concerne plusieurs types de produits (actions, obligations, ETF etc...).  \vspace{0.5em}
  
- Bien que je n'ai pas travaillé sur cet outil lors de mon stage, il est important de le mentionner dans ce rapport car SPARK est l'un des principaux atout de SILEX. De plus, le projet sur lequel j'ai travaillé va, à terme, intégré cet outil.
+  Bien que je n'ai pas travaillé sur cet outil lors de mon stage, il est important de le mentionner dans ce rapport car SPARK est l'un des principaux atout de SILEX. De plus, le projet sur lequel j'ai travaillé va, à terme, être intégré à cet outil.
 
 \newpage
-\section{Problématique}
+\section{Les produits structurés}
+\subsection{Généralités}
+\subsubsection{Définition}
+Un produit structuré est un instrument financier émis par une banque. Il est composé de plusieurs éléments visant à avoir un profil de risque/rendement qui convient à un investisseur. Il est composé généralement d'une obligation et d'un sous-jacent conjugué à une option. L'obligation permet soit de fournir une garantie en capital, ou d'améliorer le rendement d'un produit avec un capital non garanti (c'est à dire que l'investisseur peut perdre de l'argent à l'échéance du produit). Le sous-jacent peut être une action, une indice, une matière première etc.. L'option peut être une option d'achat ou de vente classique (\textit{plain vanilla}) ou une option exotique. De plus, un simple produit structuré peut être associé à plusieurs sous-jacents qui peuvent être relié à plusieurs options. Ainsi, un produit structuré peut vite devenir complexe.
+
+\subsubsection{Pourquoi existent-ils?}
+Comme les produits structurés sont fabriqués "sur mesure" pour répondre aux besoins des investisseurs, il est évident qu'ils sont devenus attractifs. Certains investisseurs recherchent un gain supérieur à un investissement sans risque, d'autres participe à la performance d'un sous-jacent avec une protection totale ou partielle de leur capital. Il existe également des investisseurs qui vont choisir d'investir dans un produit structuré lorsque des produits plus "classiques" ne sont pas disponible. \vspace{0.5em} A Approfondir
+
+\subsubsection{Termsheet}
+Pour définir et émettre un produit structuré, les banques élaborent des \textit{termsheets}, document le plus important d'un produit structuré. En effet, on y trouve toutes les caractéristiques du produit : nom du produit, nom de l'émetteur, dates d'émission et d'expiration, dates de détachement de coupon, nom des sous-jacents, montant du remboursement, devise d'émission du produit. Il est ainsi essentiel de comprendre et de savoir lire les termsheets pour un investisseur, un banquier comme pour un ingénieur financier. Une partie d'un termsheet est disponible en annexe, sur laquelle je vais m'appuyer tout au long de la prochaine partie pour expliquer en détail un produit particulier.
+
+\subsection{Un exemple de produit : l'autocall}
+Il existe beaucoup de types de produits structurés, mais l'un des principaux, en tout cas celui que j'ai le plus traité pendant ce stage, est l'autocall. C'est un produit structuré qui est à capital non garanti et qui peut être "rappelé" par l'émetteur à une date (inscrite au préalable dans le termsheet) si une condition est vérifiée à cette date.
+
+
+
+
+
 \newpage
 \section{Résolution}
 \newpage
@@ -105,27 +168,13 @@ SILEX est une société de gestion d'actifs créée en 2016. L'entreprise est di
 \newpage
 \section{Bibliographie}
 
-Ci-dessous une collection de références vers les différentes ressources m'ayant servi lors de la réalisation de ce projet personnel en humanités.\\\\
 
-Vidéos TED sur les jeux vidéo :
-
-\begin{thebibliography}{0}
-    \bibitem{GabeZichermann} Gabe \textsc{Zichermann}. \emph{How games make kids smarter}. TEDxKids@Brussels, filmé en Juin 2011 (consulté le 12 Décembre 2015). Disponible sur :\\ \url{http://www.ted.com/talks/gabe_zichermann_how_games_make_kids_smarter}
-     \bibitem{JaneMcGonigal} Jane \textsc{McGonigal}. \emph{Gaming can make a better world}. TED2010, filmé en Février 2010 (consulté le 12 Décembre 2015). Disponible sur :\\ \url{http://www.ted.com/talks/jane_mcgonigal_gaming_can_make_a_better_world}
-     \bibitem{DaphneBavelier} Daphne \textsc{Bavelier}. \emph{Your brain on video games}. TEDxCHUV, filmé en Juin 2012 (consulté le 12 Décembre 2015). Disponible sur :\\ \url{http://www.ted.com/talks/daphne_bavelier_your_brain_on_video_games}\\\\
-\end{thebibliography}
-
-Et quelques sites internet :
-
-\begin{thebibliography}{0}
-    \bibitem{HuffPost} David \textsc{Freeman}. \emph{Violent Video Games May Curb Bullying In Vulnerable Children, Study Suggests}. The Huffington Post, écrit le 28 Août 2013 (consulté le 01 Décembre 2015). Disponible sur :\\ \url{http://www.huffingtonpost.com/2013/08/28/violent-video-games-bullying-children-study_n_3823490.html}
-     \bibitem{MotherJones}  Erik \textsc{Kain}. \emph{The Truth About Video Games and Gun Violence}. The Huffington Post, écrit le 11 Juin 2013 (consulté le 01 Décembre 2015). Disponible sur :\\ \url{http://www.motherjones.com/politics/2013/06/video-games-violence-guns-explainer}
-\end{thebibliography}
 
 \newpage
 
-\section{ANNEXES}
+\section{Annexes}
 
-\subsection{Rapport du questionnaire}
 
+\newpage
+\printglossaries
 \end{document}
